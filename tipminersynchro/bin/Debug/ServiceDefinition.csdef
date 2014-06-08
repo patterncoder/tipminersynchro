@@ -15,7 +15,7 @@
     </Imports>
     <Contents>
       <Content destination=".\">
-        <SourceDirectory path="C:\Users\patterncoder\documents\visual studio 2013\Projects\tipminersynchro\tipminersynchro\rcf\Debug\WorkerRole1Content\" />
+        <SourceDirectory path="C:\Users\patterncoder\Documents\Visual Studio 2013\Projects\tipminersynchro\tipminersynchro\tipminersynchro\rcf\Debug\WorkerRole1Content\" />
       </Content>
     </Contents>
   </WorkerRole>

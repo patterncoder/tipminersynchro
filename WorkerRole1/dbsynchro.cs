@@ -14,32 +14,44 @@ using MongoDB.Driver;
 
 namespace WorkerRole1
 {
+    public class Customer 
+    { 
+        public ObjectId Id { get; set; }
+        public int SqlId { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public string Email { get; set; }
+    }
+
+    
+    
     public class dbSynchro
     {
 
 
         public static String GetData()
         {
-            string results;
+            //string results;
             string conn = "server=mssql.oldtowndining.com;database=oldtowndining;uid=oldtowndining;pwd=y5EQJ5m7C3;pooling=true;connection lifetime=120;max pool size=25;";
-            string query = "Select * from tblCustomers where CLastName = 'Baily'";
+            string query = "Select CustomerID, COALESCE(CLastName, '') as CLastName, COALESCE(CFirstName, '') as CFirstName, COALESCE(CEmail, '') as CEmail from tblCustomers where CLastName = 'Baily'";
+            List<Customer> customers = new List<Customer>();
             using (SqlConnection connection = new SqlConnection(conn))
             {
                 SqlCommand command = new SqlCommand(query, connection);
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
-                ArrayList objs = new ArrayList();
+                
 
 
                 //get the data reader, etc.
                 while (reader.Read())
                 {
-                    objs.Add(new
+                    customers.Add(new Customer
                     {
-                        Id = reader["CustomerId"],
-                        LastName = reader["CLastName"],
-                        FirstName = reader["CFirstName"],
-                        Email = reader["CEmail"]
+                        SqlId = (int)reader["CustomerId"],
+                        LastName = (String)reader["CLastName"],
+                        FirstName = (String)reader["CFirstName"],
+                        Email = (String)reader["CEmail"]
                     });
                 }
 
@@ -49,7 +61,7 @@ namespace WorkerRole1
 
                 //Console.WriteLine(JsonConvert.SerializeObject(objs));
                 //Console.ReadLine();
-                results = JsonConvert.SerializeObject(objs);
+                //results = JsonConvert.SerializeObject(objs);
 
 
             }
@@ -60,12 +72,21 @@ namespace WorkerRole1
             var client = new MongoClient(connectionString);
             var server = client.GetServer();
             var database = server.GetDatabase("tipminer");
-            var collection = database.GetCollection("testsynchro");
-            collection.Insert(results);
+            var collection = database.GetCollection<Customer>("customers");
+            //var entity = new Entity { Name = "Chris" };
+
+            foreach (Customer c in customers)
+            {
+                collection.Insert(c);
+                var id = c.Id;
+                Trace.Write("the document id is " + id.ToString());
+            }
+            
+            
 
 
 
-            return results;
+            return "hello";
         }
     }
 
